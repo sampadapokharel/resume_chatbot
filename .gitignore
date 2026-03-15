@@ -1,0 +1,4 @@
+.env
+resume/
+__pycache__/
+*.pyc

@@ -1,0 +1,8 @@
+streamlit
+openai
+psycopg2-binary
+pgvector
+python-dotenv
+pypdf
+faiss-cpu
+numpy
