@@ -1,5 +1,5 @@
 .env
-resume/
+resume.pdf
 __pycache__/
 *.pyc
 professional_summary.txt
