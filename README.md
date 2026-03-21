@@ -46,12 +46,3 @@ streamlit run app.py
 
 Then open [http://localhost:8501](http://localhost:8501) in your browser.
 
-## Tech Stack
-
-| Component | Technology |
-|---|---|
-| Embeddings | OpenAI `text-embedding-3-small` |
-| Vector store | PostgreSQL + pgvector |
-| LLM | OpenAI GPT-4.1 |
-| UI | Streamlit |
-| PDF parsing | PyPDF |
