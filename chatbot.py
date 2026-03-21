@@ -29,16 +29,19 @@ SMALLTALK_PATTERN = re.compile(
     r"^\s*(hi|hello|hey|howdy|how are you|how('s| is) it going|what'?s up|good (morning|afternoon|evening)|thanks|thank you|bye|goodbye)\s*[!?.]*\s*$",
     re.IGNORECASE
 )
-
 OFF_TOPIC_RESPONSE = "Please ask another question relevant to Sampada's professional experience."
 
-def ask(question):
+def ask(question, chat_history=None):
+    if chat_history is None:
+        chat_history = []
+
     if SMALLTALK_PATTERN.match(question):
         return OFF_TOPIC_RESPONSE
 
     stripped_question = re.sub(r"[^\w\s]", "", NAME_PATTERN.sub("", question)).strip()
     if not stripped_question:
         return OFF_TOPIC_RESPONSE
+
     q_embedding = client.embeddings.create(
         model="text-embedding-3-small",
         input=stripped_question
@@ -47,7 +50,7 @@ def ask(question):
     cur.execute(
         """
         SELECT chunk, 1 - (embedding <=> %s::vector) AS similarity
-        FROM resume_embeddings
+        FROM chat_resume_embeddings
         ORDER BY similarity DESC
         """,
         (q_embedding,)
@@ -58,18 +61,14 @@ def ask(question):
         return OFF_TOPIC_RESPONSE
 
     context = "\n".join([row[0] for row in rows])
-
-    prompt = f"""{SYSTEM_PROMPT}
-
-            Context:
-            {context}
-
-            Question:
-            {question}
-            """
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        *chat_history[-4:],
+        {"role": "user", "content": f"Context:\n{context}\n\nQuestion:\n{question}"}
+    ]
 
     response = client.chat.completions.create(
         model="gpt-4.1",
-        messages=[{"role": "user", "content": prompt}]
+        messages=messages
     )
     return response.choices[0].message.content
