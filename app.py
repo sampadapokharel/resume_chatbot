@@ -1,5 +1,5 @@
 import streamlit as st
-from chatbot import ask
+from src.chatbot import ask
 
 st.title("Ask me anything about Sampada")
 
